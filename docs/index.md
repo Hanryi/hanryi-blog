@@ -4,8 +4,12 @@ layout: home
 
 hero:
   name: "Hanryi Blog"
-  text: "Powered by VitePress"
-  tagline: My great project tagline
+  text: "Interesting is harder to come by than useful."
+  tagline: You will know it when you find it.
+  image:
+    src: /afu.jpg
+    alt: afu
+
   actions:
     - theme: brand
       text: Markdown Examples

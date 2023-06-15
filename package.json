@@ -1,10 +1,12 @@
 {
   "devDependencies": {
+    "markdown-it-katex": "^2.0.3",
+    "markdown-it-mathjax3": "^4.3.2",
     "vitepress": "^1.0.0-beta.2"
   },
   "license": "MIT",
   "scripts": {
-    "dev": "vitepress dev docs",
+    "dev": "vitepress dev docs --port 8970",
     "build": "vitepress build docs",
     "preview": "vitepress preview docs"
   }
