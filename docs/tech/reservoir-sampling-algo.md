@@ -2,6 +2,8 @@
 outline: deep
 ---
 
+<style src="./formula.styl"></style>
+
 # 蓄水池抽样算法
 
 ## 前言
@@ -32,6 +34,8 @@ outline: deep
 
 在遍历过程之前添加了一个初始化的随机数生成器，保证每次使用相同的全局随机数参数时，可以生成同样的随机数序列供 `randint()` 方法调用，使得结果可复现。
 
+::: code-group
+
 ~~~python
 def reservoir_sampling(stream, pool_size=10, seed=None):
     """ Reservoir sampling algo.
@@ -45,7 +49,7 @@ def reservoir_sampling(stream, pool_size=10, seed=None):
     :return: list
         Sampling result containing pool_size samples
     """
-    random.seed(seed)
+    random.seed(seed) // [!code ++]
     pool = [next(stream) for _ in range(pool_size)]
 
     step = 1
@@ -57,6 +61,94 @@ def reservoir_sampling(stream, pool_size=10, seed=None):
 
     return pool
 ~~~
+
+~~~go
+// Translated by chatgpt. // [!code focus]
+
+package main
+
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
+
+func reservoirSampling(stream <-chan int, poolSize int, seed int64) []int {
+	rand.Seed(seed)
+
+	pool := make([]int, poolSize)
+	for i := 0; i < poolSize; i++ {
+		pool[i] = <-stream
+	}
+
+	step := 1
+	for data := range stream {
+		idx := rand.Intn(poolSize + step)
+		if idx < poolSize {
+			pool[idx] = data
+		}
+		step++
+	}
+
+	return pool
+}
+
+func main() {
+	// Create a stream of numbers
+	stream := make(chan int)
+	go func() {
+		for i := 0; i < 100; i++ {
+			stream <- i
+		}
+		close(stream)
+	}()
+
+	poolSize := 10
+	seed := time.Now().UnixNano()
+
+	pool := reservoirSampling(stream, poolSize, seed)
+	fmt.Println(pool)
+}
+~~~
+
+~~~rust
+// Translated by chatgpt. // [!code focus]
+
+use rand::Rng;
+use std::vec::Vec;
+
+fn reservoir_sampling<T, I>(stream: I, pool_size: usize, seed: u64) -> Vec<T>
+where
+    I: Iterator<Item = T>,
+{
+    let mut rng = rand::rngs::StdRng::seed_from_u64(seed);
+
+    let mut pool: Vec<T> = stream.take(pool_size).collect();
+
+    let mut step = 1;
+    for data in stream {
+        let idx = rng.gen_range(0, pool_size + step);
+        if idx < pool_size {
+            pool[idx] = data;
+        }
+        step += 1;
+    }
+
+    pool
+}
+
+fn main() {
+    let stream = 0..100;
+
+    let pool_size = 10;
+    let seed = rand::thread_rng().gen();
+
+    let pool = reservoir_sampling(stream, pool_size, seed);
+    println!("{:?}", pool);
+}
+~~~
+
+:::
 
 ## 原理解析
 
@@ -74,25 +166,25 @@ def reservoir_sampling(stream, pool_size=10, seed=None):
 
 我们根据上述算法的步骤，分析下具体的抽奖过程：
 
-- 当总抽奖人数只有 $1$ 个人时：
+- 当总抽奖人数只有 $1$ 个人时， $i=1$ ：
   这个人中奖的概率为 $1/1=1$ ；
-- 当又来了一位新的用户参与抽奖，总抽奖人数有 $2$ 个人时：
+- 当又来了一位新的用户参与抽奖， $i=2$ ：
   抽奖系统于用户队列 $[1,\;2]$ 内生成一个随机整数，依据等概率抽样的原则，第 $2$ 个人中奖的概率为 $1/len([1,\;2])=1/2=\frac{1}{2}$ ；
   此时总人数为 $2$ ，随机整数落到用户队列最前面 $1$ 个用户的概率为 $\frac{1}{2}$ ；
   - 第 $1$ 个人中奖的概率为 $1\times\frac{1}{2}=\frac{1}{2}$ ；
-- 当又来了一位新的用户参与抽奖，总抽奖人数有 $3$ 个人时：
+- 当又来了一位新的用户参与抽奖， $i=3$ ：
   抽奖系统于用户队列 $[1,\;2,\;3]$ 内生成一个随机整数，依据等概率抽样的原则，第 $3$ 个人中奖的概率为 $1/len([1,\;2,\;3])=1/3=\frac{1}{3}$ ；
   此时总人数为 $3$ ，随机整数落到用户队列最前面 $2$ 个用户中奖的概率为 $\frac{2}{3}$ ；
   - 第 $2$ 个人中奖的概率为 $\frac{1}{2}\times\frac{2}{3}=\frac{1}{3}$ ；
   - 第 $1$ 个人中奖的概率为 $\frac{1}{2}\times\frac{2}{3}=\frac{1}{3}$ ；
-- 当又来了一位新的用户参与抽奖，总抽奖人数有 $4$ 个人时：
+- 当又来了一位新的用户参与抽奖， $i=4$ ：
   抽奖系统于用户队列 $[1,\;2,\;3,\;4]$ 内生成一个随机整数，依据等概率抽样的原则，第 $4$ 个人中奖的概率为 $1/len([1,\;2,\;3,\;4])=1/4=\frac{1}{4}$ ；
   此时总人数为 $4$ ，随机整数落到用户队列最前面 $3$ 个用户中奖的概率为 $\frac{3}{4}$ ；
   - 第 $3$ 个人中奖的概率为 $\frac{1}{3}\times\frac{3}{4}=\frac{1}{4}$ ；
   - 第 $2$ 个人中奖的概率为 $\frac{1}{3}\times\frac{3}{4}=\frac{1}{4}$ ；
   - 第 $1$ 个人中奖的概率为 $\frac{1}{3}\times\frac{3}{4}=\frac{1}{4}$ ；
 - ...
-- 当总抽奖人数共有 $N$ 个人时：
+- 当总抽奖人数共有 $N$ 个人时， $i=N$ ：
   抽奖系统于用户队列 $[1,\;2,\;\cdots,\;N]$ 内生成一个随机整数，依据等概率抽样的原则，第 $4$ 个人中奖的概率为 $1/len([1,\;2,\;\cdots,\;N])=1/4=\frac{1}{4}$ ；
   此时总人数为 $N$ ，随机整数落到用户队列最前面 $N-1$ 个用户中奖的概率为 $\frac{N-1}{N}$ ；
   - 第 $1,\;2,\;\cdots,\;N-1$ 个人的中奖概率均由 $\frac{1}{N-1}$ 变更为 $\frac{1}{N-1}\times\frac{N-1}{N}=\frac{1}{N}$ ；
@@ -118,7 +210,7 @@ P_i
 $$
 
 $$
-=\frac{m}{i}\times\frac{i}{i+1}\times\frac{i+1}{i+2}\times\cdots\times\frac{N-1}{N}  
+=\frac{m}{i}\times\frac{i}{i+1}\times\frac{i+1}{i+2}\times\cdots\times\frac{N-1}{N}
 $$
 
 $$

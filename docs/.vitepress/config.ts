@@ -49,6 +49,8 @@ export default defineConfig({
   },
 
   markdown: {
+    lineNumbers: true,
+    // katex render
     config: (md) => {
       md.use(markdownItKatex)
     }
