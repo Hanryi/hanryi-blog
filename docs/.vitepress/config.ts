@@ -7,6 +7,7 @@ export default defineConfig({
     ['link', { rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css', crossorigin: '' }]
   ],
   
+  base: '/',
   title: "Hanryi Blog",
   description: "Powered by VitePress",
   themeConfig: {
@@ -47,6 +48,7 @@ export default defineConfig({
       copyright: 'Copyright © 2023-present <a href="https://github.com/Hanryi">Hanryi</a>'
     }
   },
+  lastUpdated: true,
 
   markdown: {
     lineNumbers: true,

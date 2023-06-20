@@ -7,16 +7,16 @@ hero:
   text: "Interesting is harder to come by than useful."
   tagline: You will know it when you find it.
   image:
-    src: ./afu.jpg
+    src: /afu.jpg
     alt: afu
 
   actions:
     - theme: brand
       text: Markdown Examples
-      link: /markdown-examples
+      link: /examples/markdown-examples
     - theme: alt
       text: API Examples
-      link: /api-examples
+      link: /examples/api-examples
 
 features:
   - title: Feature A
