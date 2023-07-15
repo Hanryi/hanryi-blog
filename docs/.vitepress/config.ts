@@ -4,6 +4,7 @@ import markdownItKatex from 'markdown-it-katex'
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   head: [
+    ['link', { rel: 'icon', href: '/hanryi-art.svg' }],
     ['link', { rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css', crossorigin: '' }]
   ],
   
@@ -11,11 +12,11 @@ export default defineConfig({
   title: "Hanryi Blog",
   description: "Powered by VitePress",
   themeConfig: {
+    logo: '/hanryi-art.svg',    
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Tech', link: '/tech/reservoir-sampling-algo' },
-      { text: 'Examples', link: '/examples/markdown-examples' }
     ],
 
     sidebar: {
@@ -28,16 +29,6 @@ export default defineConfig({
           ]
         }
       ],
-      '/examples/': [
-        {
-          text: 'Examples',
-          collapsed: true,
-          items: [
-            { text: 'Markdown Examples', link: '/markdown-examples' },
-            { text: 'Runtime API Examples', link: '/api-examples' }
-          ]
-        }
-      ]
     },
 
     socialLinks: [
